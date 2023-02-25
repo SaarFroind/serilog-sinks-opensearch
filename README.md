@@ -1,5 +1,10 @@
 This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Serilog.Formatting.OpenSearch`.
 
+*NOTICE*
+This sink is a port from the project Serilog.Sinks.Elasticsearch.
+There are still many unrelavent references to Elasticsearch, feel free to help out! 
+
+
 ## Table of contents
 
 * [What is this sink](#what-is-this-sink)
@@ -15,9 +20,8 @@ This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Ser
   * [Breaking changes](#breaking-changes)
 
 ## What is this sink
-This sink is a port from the project Serilog.Sinks.Elasticsearch meant to support ES.
 Elasticsearch packages (Elasticsearch.NET and NEST) with versions > 7.17 no longer support writing to OpenSearch and OpenDistro.
-The Serilog OpenSearch sink project is a sink (basically a writer) for the Serilog logging framework. Structured log events are written to sinks and each sink is responsible for writing it to its own backend, database, store etc. This sink delivers the data to Elasticsearch, a NoSQL search engine. It does this in a similar structure as Logstash and makes it easy to use Kibana for visualizing your logs.
+The Serilog OpenSearch sink project is a sink (basically a writer) for the Serilog logging framework. Structured log events are written to sinks and each sink is responsible for writing it to its own backend, database, store etc. This sink delivers the data to OpeanSearch, a NoSQL search engine. It does this in a similar structure as Logstash and makes it easy to use OpenSearch Dashboards for visualizing your logs.
 
 ## Features
 
@@ -85,22 +89,6 @@ More elaborate configuration, using additional Nuget packages (e.g. `Serilog.Enr
   }
 }
 ```
-
-### Disable detection of Elasticsearch server version
-
-Alternatively, `DetectElasticsearchVersion` can be set to `false` and certain option can be configured manually. In that case, the sink will assume version 7 of Elasticsearch, but options will be ignored due to a potential version incompatibility.
-
-For example, you can configure the sink to force registeration of v6 index template. Be aware that the AutoRegisterTemplate option will not overwrite an existing template.
-
-```csharp
-var loggerConfig = new LoggerConfiguration()
-    .WriteTo.OpenSearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200") ){
-             DetectElasticsearchVersion = false,
-             AutoRegisterTemplate = true,
-             AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
-     });
-```
-
 ### Configurable properties
 
 Besides a registration of the sink in the code, it is possible to register it using appSettings reader (from v2.0.42+) reader (from v2.0.42+) as shown below.
@@ -109,63 +97,62 @@ This example shows the options that are currently available when using the appSe
 
 ```xml
   <appSettings>
-    <add key="serilog:using" value="Serilog.Sinks.Elasticsearch"/>
-    <add key="serilog:write-to:Elasticsearch.nodeUris" value="http://localhost:9200;http://remotehost:9200"/>
-    <add key="serilog:write-to:Elasticsearch.indexFormat" value="custom-index-{0:yyyy.MM}"/>
-    <add key="serilog:write-to:Elasticsearch.templateName" value="myCustomTemplate"/>
-    <add key="serilog:write-to:Elasticsearch.typeName" value="myCustomLogEventType"/>
-    <add key="serilog:write-to:Elasticsearch.pipelineName" value="myCustomPipelineName"/>
-    <add key="serilog:write-to:Elasticsearch.batchPostingLimit" value="50"/>
-    <add key="serilog:write-to:Elasticsearch.batchAction" value="Create"/><!-- "Index" is default -->
-    <add key="serilog:write-to:Elasticsearch.period" value="2"/>
-    <add key="serilog:write-to:Elasticsearch.inlineFields" value="true"/>
-    <add key="serilog:write-to:Elasticsearch.restrictedToMinimumLevel" value="Warning"/>
-    <add key="serilog:write-to:Elasticsearch.bufferBaseFilename" value="C:\Temp\SerilogElasticBuffer"/>
-    <add key="serilog:write-to:Elasticsearch.bufferFileSizeLimitBytes" value="5242880"/>
-    <add key="serilog:write-to:Elasticsearch.bufferLogShippingInterval" value="5000"/>
-    <add key="serilog:write-to:Elasticsearch.bufferRetainedInvalidPayloadsLimitBytes" value="5000"/>
-    <add key="serilog:write-to:Elasticsearch.bufferFileCountLimit " value="31"/>
-    <add key="serilog:write-to:Elasticsearch.connectionGlobalHeaders" value="Authorization=Bearer SOME-TOKEN;OtherHeader=OTHER-HEADER-VALUE" />
-    <add key="serilog:write-to:Elasticsearch.connectionTimeout" value="5" />
-    <add key="serilog:write-to:Elasticsearch.emitEventFailure" value="WriteToSelfLog" />
-    <add key="serilog:write-to:Elasticsearch.queueSizeLimit" value="100000" />
-    <add key="serilog:write-to:Elasticsearch.autoRegisterTemplate" value="true" />
-    <add key="serilog:write-to:Elasticsearch.detectElasticsearchVersion" value="false" /><!-- `true` is default -->
-    <add key="serilog:write-to:Elasticsearch.overwriteTemplate" value="false" />
-    <add key="serilog:write-to:Elasticsearch.registerTemplateFailure" value="IndexAnyway" />
-    <add key="serilog:write-to:Elasticsearch.deadLetterIndexName" value="deadletter-{0:yyyy.MM}" />
-    <add key="serilog:write-to:Elasticsearch.numberOfShards" value="20" />
-    <add key="serilog:write-to:Elasticsearch.numberOfReplicas" value="10" />
-    <add key="serilog:write-to:Elasticsearch.formatProvider" value="My.Namespace.MyFormatProvider, My.Assembly.Name" />
-    <add key="serilog:write-to:Elasticsearch.connection" value="My.Namespace.MyConnection, My.Assembly.Name" />
-    <add key="serilog:write-to:Elasticsearch.serializer" value="My.Namespace.MySerializer, My.Assembly.Name" />
-    <add key="serilog:write-to:Elasticsearch.connectionPool" value="My.Namespace.MyConnectionPool, My.Assembly.Name" />
-    <add key="serilog:write-to:Elasticsearch.customFormatter" value="My.Namespace.MyCustomFormatter, My.Assembly.Name" />
-    <add key="serilog:write-to:Elasticsearch.customDurableFormatter" value="My.Namespace.MyCustomDurableFormatter, My.Assembly.Name" />
-    <add key="serilog:write-to:Elasticsearch.failureSink" value="My.Namespace.MyFailureSink, My.Assembly.Name" />
+    <add key="serilog:using" value="Serilog.Sinks.OpenSearch"/>
+    <add key="serilog:write-to:OpenSearch.nodeUris" value="http://localhost:9200;http://remotehost:9200"/>
+    <add key="serilog:write-to:OpenSearch.indexFormat" value="custom-index-{0:yyyy.MM}"/>
+    <add key="serilog:write-to:OpenSearch.templateName" value="myCustomTemplate"/>
+    <add key="serilog:write-to:OpenSearch.typeName" value="myCustomLogEventType"/>
+    <add key="serilog:write-to:OpenSearch.pipelineName" value="myCustomPipelineName"/>
+    <add key="serilog:write-to:OpenSearch.batchPostingLimit" value="50"/>
+    <add key="serilog:write-to:OpenSearch.batchAction" value="Create"/><!-- "Index" is default -->
+    <add key="serilog:write-to:OpenSearch.period" value="2"/>
+    <add key="serilog:write-to:OpenSearch.inlineFields" value="true"/>
+    <add key="serilog:write-to:OpenSearch.restrictedToMinimumLevel" value="Warning"/>
+    <add key="serilog:write-to:OpenSearch.bufferBaseFilename" value="C:\Temp\SerilogOpenSearchBuffer"/>
+    <add key="serilog:write-to:OpenSearch.bufferFileSizeLimitBytes" value="5242880"/>
+    <add key="serilog:write-to:OpenSearch.bufferLogShippingInterval" value="5000"/>
+    <add key="serilog:write-to:OpenSearch.bufferRetainedInvalidPayloadsLimitBytes" value="5000"/>
+    <add key="serilog:write-to:OpenSearch.bufferFileCountLimit " value="31"/>
+    <add key="serilog:write-to:OpenSearch.connectionGlobalHeaders" value="Authorization=Bearer SOME-TOKEN;OtherHeader=OTHER-HEADER-VALUE" />
+    <add key="serilog:write-to:OpenSearch.connectionTimeout" value="5" />
+    <add key="serilog:write-to:OpenSearch.emitEventFailure" value="WriteToSelfLog" />
+    <add key="serilog:write-to:OpenSearch.queueSizeLimit" value="100000" />
+    <add key="serilog:write-to:OpenSearch.autoRegisterTemplate" value="true" />
+    <add key="serilog:write-to:OpenSearch.overwriteTemplate" value="false" />
+    <add key="serilog:write-to:OpenSearch.registerTemplateFailure" value="IndexAnyway" />
+    <add key="serilog:write-to:OpenSearch.deadLetterIndexName" value="deadletter-{0:yyyy.MM}" />
+    <add key="serilog:write-to:OpenSearch.numberOfShards" value="20" />
+    <add key="serilog:write-to:OpenSearch.numberOfReplicas" value="10" />
+    <add key="serilog:write-to:OpenSearch.formatProvider" value="My.Namespace.MyFormatProvider, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.connection" value="My.Namespace.MyConnection, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.serializer" value="My.Namespace.MySerializer, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.connectionPool" value="My.Namespace.MyConnectionPool, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.customFormatter" value="My.Namespace.MyCustomFormatter, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.customDurableFormatter" value="My.Namespace.MyCustomDurableFormatter, My.Assembly.Name" />
+    <add key="serilog:write-to:OpenSearch.failureSink" value="My.Namespace.MyFailureSink, My.Assembly.Name" />
   </appSettings>
 ```
 
-With the appSettings configuration the `nodeUris` property is required. Multiple nodes can be specified using `,` or `;` to separate them. All other properties are optional. Also required is the `<add key="serilog:using" value="Serilog.Sinks.Elasticsearch"/>` setting to include this sink. All other properties are optional. If you do not explicitly specify an indexFormat-setting, a generic index such as 'logstash-[current_date]' will be used automatically.
+With the appSettings configuration the `nodeUris` property is required. Multiple nodes can be specified using `,` or `;` to separate them. All other properties are optional. Also required is the `<add key="serilog:using" value="Serilog.Sinks.OpenSearch"/>` setting to include this sink. All other properties are optional. If you do not explicitly specify an indexFormat-setting, a generic index such as 'logstash-[current_date]' will be used automatically.
 
 And start writing your events using Serilog.
 
-### Elasticsearch formatters
+### OpenSearch formatters
 
 ```powershell
 Install-Package serilog.formatting.elasticsearch
 ```
 
-The `Serilog.Formatting.Elasticsearch` nuget package consists of a several formatters:
+The `Serilog.Formatting.OpenSearch` nuget package consists of a several formatters:
 
-* `ElasticsearchJsonFormatter` - custom json formatter that respects the configured property name handling and forces `Timestamp` to @timestamp.
+* `OpenSearchJsonFormatter` - custom json formatter that respects the configured property name handling and forces `Timestamp` to @timestamp.
 * `ExceptionAsObjectJsonFormatter` - a json formatter which serializes any exception into an exception object.
 
 Override default formatter if it's possible with selected sink
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
-  .WriteTo.Console(new ElasticsearchJsonFormatter());
+  .WriteTo.Console(new OpenSearchJsonFormatter());
 ```
 
 ## More information
@@ -177,9 +164,9 @@ var loggerConfig = new LoggerConfiguration()
 * Report issues to the [issue tracker](https://github.com/serilog/serilog-sinks-elasticsearch/issues). PR welcome, but please do this against the dev branch.
 * For an overview of recent changes, have a look at the [change log](https://github.com/serilog/serilog-sinks-elasticsearch/blob/master/CHANGES.md).
 
-### A note about fields inside Elasticsearch
+### A note about fields inside OpenSearch
 
-Be aware that there is an explicit and implicit mapping of types inside an Elasticsearch index. A value called `X` as a string will be indexed as being a string. Sending the same `X` as an integer in a next log message will not work. ES will raise a mapping exception, however it is not that evident that your log item was not stored due to the bulk actions performed.
+Be aware that there is an explicit and implicit mapping of types inside an OpenSearch index. A value called `X` as a string will be indexed as being a string. Sending the same `X` as an integer in a next log message will not work. ES will raise a mapping exception, however it is not that evident that your log item was not stored due to the bulk actions performed.
 
 So be careful about defining and using your fields (and type of fields). It is easy to miss that you first send a {User} as a simple username (string) and next as a User object. The first mapping dynamically created in the index wins. See also issue [#184](https://github.com/serilog/serilog-sinks-elasticsearch/issues/184) for details and a possible solution. There are also limits in ES on the number of dynamic fields you can actually throw inside an index.
 
@@ -194,7 +181,7 @@ exception fields on dashboards and visualizations. Therefore, we provide an alte
 To use it, simply specify it as the `CustomFormatter` when creating the sink:
 
 ```csharp
-    new ElasticsearchSink(new ElasticsearchSinkOptions(url)
+    new OpenSearchSink(new OpenSearchSinkOptions(url)
     {
       CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage:true)
     });
@@ -202,7 +189,7 @@ To use it, simply specify it as the `CustomFormatter` when creating the sink:
 
 ### JSON `appsettings.json` configuration
 
-To use the Elasticsearch sink with _Microsoft.Extensions.Configuration_, for example with ASP.NET Core or .NET Core, use the [Serilog.Settings.Configuration](https://github.com/serilog/serilog-settings-configuration) package. First install that package if you have not already done so:
+To use the OpenSearch sink with _Microsoft.Extensions.Configuration_, for example with ASP.NET Core or .NET Core, use the [Serilog.Settings.Configuration](https://github.com/serilog/serilog-settings-configuration) package. First install that package if you have not already done so:
 
 ```powershell
 Install-Package Serilog.Settings.Configuration
@@ -227,7 +214,7 @@ In your `appsettings.json` file, under the `Serilog` node, :
 {
   "Serilog": {
     "WriteTo": [{
-        "Name": "Elasticsearch",
+        "Name": "OpenSearch",
         "Args": {
           "nodeUris": "http://localhost:9200;http://remotehost:9200/",
           "indexFormat": "custom-index-{0:yyyy.MM}",
@@ -272,18 +259,18 @@ See the XML `<appSettings>` example above for a discussion of available `Args` o
 
 ### Handling errors
 
-From version 5.5 you have the option to specify how to handle issues with Elasticsearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the Elasticsearch store.
+From version 5.5 you have the option to specify how to handle issues with OpenSearch. Since the sink delivers in a batch, it might be possible that one or more events could actually not be stored in the OpenSearch store.
 Can be a mapping issue for example. It is hard to find out what happened here. There is a new option called *EmitEventFailure* which is an enum (flagged) with the following options:
 
 * WriteToSelfLog, the default option in which the errors are written to the SelfLog.
 * WriteToFailureSink, the failed events are send to another sink. Make sure to configure this one by setting the FailureSink option.
 * ThrowException, in which an exception is raised.
-* RaiseCallback, the failure callback function will be called when the event cannot be submitted to Elasticsearch. Make sure to set the FailureCallback option to handle the event.
+* RaiseCallback, the failure callback function will be called when the event cannot be submitted to OpenSearch. Make sure to set the FailureCallback option to handle the event.
 
 An example:
 
 ```csharp
-.WriteTo.OpenSearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+.WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9200"))
                 {
                     FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
                     EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |
@@ -293,7 +280,7 @@ An example:
                 })
 ```
 
-With the AutoRegisterTemplate option the sink will write a default template to Elasticsearch. When this template is not there, you might not want to index as it can influence the data quality.
+With the AutoRegisterTemplate option the sink will write a default template to OpenSearch. When this template is not there, you might not want to index as it can influence the data quality.
 Since version 5.5 you can use the RegisterTemplateFailure option. Set it to one of the following options:
 
 * IndexAnyway; the default option, the events will be send to the server
@@ -330,7 +317,13 @@ i.e.
 Option BufferFileCountLimit is added. The maximum number of log files that will be retained. including the current log file. For unlimited retention, pass null. The default is 31.
 Option BufferFileSizeLimitBytes is added The maximum size, in bytes, to which the buffer log file for a specific date will be allowed to grow. By default `100L * 1024 * 1024` will be applied.
 
-### Breaking changes
+### Breaking Changes
+#### Version 1.2.0 (starting off with the same version as the OpenSearch.Net and OpenSearch.Client versions)
+
+*Removed Elasticsearch packages and added OpenSearch packages.
+*Changed naming conventions
+
+### serilog-sinks-elasticsearch Breaking changes
 
 #### Version 9
 
