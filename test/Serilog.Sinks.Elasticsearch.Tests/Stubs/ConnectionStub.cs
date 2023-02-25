@@ -3,10 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
 using System.Threading;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Stubs
+/* Unmerged change from project 'Serilog.Sinks.OpenSearch.Tests (net7.0)'
+Before:
+using OpenSearch.Net;
+After:
+using OpenSearch.Net;
+using Serilog;
+using Serilog.Sinks;
+using Serilog.Sinks.Elasticsearch;
+using Serilog.Sinks.Elasticsearch.Tests;
+using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
+*/
+using OpenSearch.Net;
+
+namespace Serilog.Sinks.OpenSearch.Tests.Stubs
 {
     internal class ConnectionStub : InMemoryConnection
     {
@@ -66,7 +79,6 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Stubs
 
             int responseStatusCode = 200;
             string contentType = null;
-            InMemoryHttpResponse productCheckResponse = null;
 
             switch (requestData.Method)
             {
@@ -80,7 +92,6 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Stubs
                     switch (requestData.Uri.PathAndQuery.ToLower())
                     {
                         case "/":
-                            productCheckResponse = ModifiedProductCheckResponse(_productVersion);
                             break;
                         case "/_cat/nodes?h=v":
                             responseBytes = Encoding.UTF8.GetBytes(_productVersion);
@@ -98,29 +109,12 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Stubs
                     break;
             }
 
-            return ReturnConnectionStatus<TReturn>(requestData, productCheckResponse, responseBytes, responseStatusCode, contentType);
+            return ReturnConnectionStatus<TReturn>(requestData, responseBytes, responseStatusCode, contentType);
         }
 
         public override Task<TResponse> RequestAsync<TResponse>(RequestData requestData, CancellationToken cancellationToken)
         {
             return Task.FromResult(Request<TResponse>(requestData));
-        }
-
-        public static InMemoryHttpResponse ModifiedProductCheckResponse(string productVersion)
-        {
-            var productCheckResponse = ValidProductCheckResponse();
-            if (productVersion is not null)
-            {
-                using var originalMemoryStream = new MemoryStream(productCheckResponse.ResponseBytes, false);
-                {
-                    var json = LowLevelRequestResponseSerializer.Instance.Deserialize<dynamic>(originalMemoryStream);
-                    json["version"]["number"] = productVersion;
-                    using var modifiedMemoryStream = new MemoryStream();
-                    LowLevelRequestResponseSerializer.Instance.Serialize(json, modifiedMemoryStream);
-                    productCheckResponse.ResponseBytes = modifiedMemoryStream.ToArray();
-                }
-            }
-            return productCheckResponse;
         }
     }
 }

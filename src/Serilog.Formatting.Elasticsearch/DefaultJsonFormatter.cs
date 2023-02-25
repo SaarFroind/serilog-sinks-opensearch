@@ -19,7 +19,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Serilog.Events;
-using Serilog.Formatting;
 using Serilog.Formatting.Json;
 using Serilog.Parsing;
 

@@ -4,19 +4,19 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class InlineFieldsTests : ElasticsearchSinkTestsBase
+    public class InlineFieldsTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public async Task UsesCustomPropertyNames()
         {
             try
             {
-                await this.ThrowAsync();
+                await ThrowAsync();
             }
             catch (Exception e)
             {
@@ -24,7 +24,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
                 var messageTemplate = "{Song}++";
                 var template = new MessageTemplateParser().Parse(messageTemplate);
                 _options.InlineFields = true;
-                using (var sink = new ElasticsearchSink(_options))
+                using (var sink = new OpenSearchSink(_options))
                 {
                     var properties = new List<LogEventProperty>
                     {
@@ -38,7 +38,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
                     logEvent = new LogEvent(timestamp.AddDays(2), LogEventLevel.Information, e, template, properties);
                     sink.Emit(logEvent);
                 }
-                var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+                var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 4);
                 bulkJsonPieces[0].Should().Contain(@"""_index"":""logstash-2013.05.28");
                 bulkJsonPieces[1].Should().Contain("New Macabre");
                 bulkJsonPieces[1].Should().NotContain("Properties\"");

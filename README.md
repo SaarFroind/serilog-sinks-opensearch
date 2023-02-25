@@ -1,51 +1,47 @@
-# Serilog.Sinks.Elasticsearch [![Continuous Integration](https://github.com/serilog-contrib/serilog-sinks-elasticsearch/actions/workflows/cicd.yaml/badge.svg?branch=dev)](https://github.com/serilog-contrib/serilog-sinks-elasticsearch/actions/workflows/cicd.yaml) [![NuGet Badge](https://img.shields.io/nuget/v/Serilog.Sinks.Elasticsearch.svg)](https://www.nuget.org/packages/Serilog.Sinks.Elasticsearch)
-
-This repository contains two nuget packages: `Serilog.Sinks.Elasticsearch` and `Serilog.Formatting.Elasticsearch`.
+This repository contains two nuget packages: `Serilog.Sinks.OpenSearch` and `Serilog.Formatting.OpenSearch`.
 
 ## Table of contents
 
 * [What is this sink](#what-is-this-sink)
 * [Features](#features)
 * [Quick start](#quick-start)
-  * [Elasticsearch sinks](#elasticsearch-sinks)
-  * [Elasticsearch formatters](#elasticsearch-formatters)
+  * [OpenSearch sinks](#elasticsearch-sinks)
+  * [OpenSearch formatters](#elasticsearch-formatters)
 * [More information](#more-information)
-  * [A note about fields inside Elasticsearch](#a-note-about-fields-inside-elasticsearch)
+  * [A note about fields inside OpenSearch](#a-note-about-fields-inside-elasticsearch)
   * [A note about Kibana](#a-note-about-kibana)
   * [JSON `appsettings.json` configuration](#json-appsettingsjson-configuration)
   * [Handling errors](#handling-errors)
   * [Breaking changes](#breaking-changes)
 
 ## What is this sink
-
-The Serilog Elasticsearch sink project is a sink (basically a writer) for the Serilog logging framework. Structured log events are written to sinks and each sink is responsible for writing it to its own backend, database, store etc. This sink delivers the data to Elasticsearch, a NoSQL search engine. It does this in a similar structure as Logstash and makes it easy to use Kibana for visualizing your logs.
+This sink is a port from the project Serilog.Sinks.Elasticsearch meant to support ES.
+Elasticsearch packages (Elasticsearch.NET and NEST) with versions > 7.17 no longer support writing to OpenSearch and OpenDistro.
+The Serilog OpenSearch sink project is a sink (basically a writer) for the Serilog logging framework. Structured log events are written to sinks and each sink is responsible for writing it to its own backend, database, store etc. This sink delivers the data to Elasticsearch, a NoSQL search engine. It does this in a similar structure as Logstash and makes it easy to use Kibana for visualizing your logs.
 
 ## Features
 
-* Simple configuration to get log events published to Elasticsearch. Only server address is needed.
-* All properties are stored inside fields in ES. This allows you to query on all the relevant data but also run analytics over this data.
+* Simple configuration to get log events published to OpenSearch. Only server address is needed.
+* All properties are stored inside fields in OpenSearch. This allows you to query on all the relevant data but also run analytics over this data.
 * Be able to customize the store; specify the index name being used, the serializer or the connections to the server (load balanced).
-* Durable mode; store the logevents first on disk before delivering them to ES making sure you never miss events if you have trouble connecting to your ES cluster.
-* Automatically create the right mappings for the best usage of the log events in ES or automatically upload your own custom mapping.
-* Starting from version 3, compatible with Elasticsearch 2.
-* Version 6.x supports the new Elasticsearch.net version 6.x library.
-* From version 8.x there is support for Elasticsearch.net version 7.
-* From version 9.x there is support for Elasticsearch.net version 8. Version detection is enabled by default, in which case `TypeName` is handled automatically across major versions 6, 7 and 8. Versions 2 and 5 of Elasticsearch are no longer supported. Version 9.0.0 of the sink targets netstandard2.0 and therefore can be run on any .NET Framework that supports it (both .NET Core and .NET Framework), however, we are focused on testing it with .NET 6.0 to make the maintenance simpler.
+* Durable mode; store the logevents first on disk before delivering them to ES making sure you never miss events if you have trouble connecting to your OpenSearch cluster.
+* Automatically create the right mappings for the best usage of the log events in OpenSearch or automatically upload your own custom mapping.
+* Compatible with OpenSearch > 1.0.0
 
 
 ## Quick start
 
-### Elasticsearch sinks
+### OpenSearch sinks
 
 ```powershell
-Install-Package serilog.sinks.elasticsearch
+Install-Package serilog.sinks.OpenSearch
 ```
 
 Simplest way to register this sink is to use default configuration:
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200")));
+    .WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9200")));
 ```
 
 Or, if using .NET Core and `Serilog.Settings.Configuration` Nuget package and `appsettings.json`, default configuration would look like this:
@@ -53,11 +49,11 @@ Or, if using .NET Core and `Serilog.Settings.Configuration` Nuget package and `a
 ```json
 {
   "Serilog": {
-    "Using": [ "Serilog.Sinks.Elasticsearch" ],
+    "Using": [ "Serilog.Sinks.OpenSearch" ],
     "MinimumLevel": "Warning",
     "WriteTo": [
       {
-        "Name": "Elasticsearch",
+        "Name": "OpenSearch",
         "Args": {
           "nodeUris": "http://localhost:9200"
         }
@@ -72,11 +68,11 @@ More elaborate configuration, using additional Nuget packages (e.g. `Serilog.Enr
 ```json
 {
   "Serilog": {
-    "Using": [ "Serilog.Sinks.Elasticsearch" ],
+    "Using": [ "Serilog.Sinks.OpenSearch" ],
     "MinimumLevel": "Warning",
     "WriteTo": [
       {
-        "Name": "Elasticsearch",
+        "Name": "OpenSearch",
         "Args": {
           "nodeUris": "http://localhost:9200"
         }
@@ -90,8 +86,6 @@ More elaborate configuration, using additional Nuget packages (e.g. `Serilog.Enr
 }
 ```
 
-This way the sink will detect version of Elasticsearch server (`DetectElasticsearchVersion` is set to `true` by default) and handle `TypeName` behavior correctly, based on the server version (6.x, 7.x or 8.x).
-
 ### Disable detection of Elasticsearch server version
 
 Alternatively, `DetectElasticsearchVersion` can be set to `false` and certain option can be configured manually. In that case, the sink will assume version 7 of Elasticsearch, but options will be ignored due to a potential version incompatibility.
@@ -100,7 +94,7 @@ For example, you can configure the sink to force registeration of v6 index templ
 
 ```csharp
 var loggerConfig = new LoggerConfiguration()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200") ){
+    .WriteTo.OpenSearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200") ){
              DetectElasticsearchVersion = false,
              AutoRegisterTemplate = true,
              AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
@@ -136,7 +130,6 @@ This example shows the options that are currently available when using the appSe
     <add key="serilog:write-to:Elasticsearch.emitEventFailure" value="WriteToSelfLog" />
     <add key="serilog:write-to:Elasticsearch.queueSizeLimit" value="100000" />
     <add key="serilog:write-to:Elasticsearch.autoRegisterTemplate" value="true" />
-    <add key="serilog:write-to:Elasticsearch.autoRegisterTemplateVersion" value="ESv7" />
     <add key="serilog:write-to:Elasticsearch.detectElasticsearchVersion" value="false" /><!-- `true` is default -->
     <add key="serilog:write-to:Elasticsearch.overwriteTemplate" value="false" />
     <add key="serilog:write-to:Elasticsearch.registerTemplateFailure" value="IndexAnyway" />
@@ -256,7 +249,6 @@ In your `appsettings.json` file, under the `Serilog` node, :
           "emitEventFailure": "WriteToSelfLog",
           "queueSizeLimit": "100000",
           "autoRegisterTemplate": true,
-          "autoRegisterTemplateVersion": "ESv2",
           "overwriteTemplate": false,
           "registerTemplateFailure": "IndexAnyway",
           "deadLetterIndexName": "deadletter-{0:yyyy.MM}",
@@ -291,7 +283,7 @@ Can be a mapping issue for example. It is hard to find out what happened here. T
 An example:
 
 ```csharp
-.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+.WriteTo.OpenSearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
                 {
                     FailureCallback = e => Console.WriteLine("Unable to submit event " + e.MessageTemplate),
                     EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog |

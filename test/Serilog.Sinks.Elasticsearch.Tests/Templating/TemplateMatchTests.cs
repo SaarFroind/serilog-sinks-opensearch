@@ -1,11 +1,11 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class TemplateMatchTests : ElasticsearchSinkTestsBase
+    public class TemplateMatchTests : OpenSearchSinkTestsBase
     {
         private readonly Tuple<Uri, string> _templatePut;
 
@@ -19,7 +19,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Templating
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using (logger as IDisposable)
@@ -27,24 +27,24 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Templating
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpHeads.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            _templatePut = this._seenHttpPuts[0];
-            
+            _seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _seenHttpHeads.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _templatePut = _seenHttpPuts[0];
+
         }
 
         [Fact]
         public void TemplatePutToCorrectUrl()
         {
-            var uri = this._templatePut.Item1;
+            var uri = _templatePut.Item1;
             uri.AbsolutePath.Should().Be("/_template/dailyindex-logs-template");
         }
 
         [Fact]
         public void TemplateMatchShouldReflectConfiguredIndexFormat()
         {
-            var json = this._templatePut.Item2;
+            var json = _templatePut.Item2;
             json.Should().Contain(@"""index_patterns"":[""dailyindex-*-mycompany""]");
         }
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class OverwriteTemplateTests : ElasticsearchSinkTestsBase
+    public class OverwriteTemplateTests : OpenSearchSinkTestsBase
     {
         private void DoRegister()
         {
@@ -17,7 +17,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Templating
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using (logger as IDisposable)
@@ -30,9 +30,9 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Templating
         public void ShouldOverwriteTemplate()
         {
             DoRegister();
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpHeads.Should().BeNullOrEmpty();
-            this._seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _seenHttpHeads.Should().BeNullOrEmpty();
+            _seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
         }
 
 

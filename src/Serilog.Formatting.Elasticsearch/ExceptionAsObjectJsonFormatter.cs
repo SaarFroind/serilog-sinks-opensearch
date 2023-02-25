@@ -26,7 +26,7 @@ namespace Serilog.Formatting.Elasticsearch
     /// Note that using this formatter comes at the cost that the exception tree 
     /// with inner exceptions can grow deep.
     /// </summary>
-    public class ExceptionAsObjectJsonFormatter : ElasticsearchJsonFormatter
+    public class ExceptionAsObjectJsonFormatter : OpenSearchJsonFormatter
     {
         /// <summary>
         /// Constructs a <see cref="ExceptionAsObjectJsonFormatter"/>.

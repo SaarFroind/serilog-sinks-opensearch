@@ -1,15 +1,15 @@
 ﻿using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Discrepancies
+namespace Serilog.Sinks.OpenSearch.Tests.Discrepancies
 {
-    public class NoSerializerTests : ElasticsearchSinkUniformityTestsBase
+    public class NoSerializerTests : OpenSearchSinkUniformityTestsBase
     {
-        public NoSerializerTests() : base(null) {}
+        public NoSerializerTests() : base(null) { }
 
         [Fact]
         public void Should_SerializeToExpandedExceptionObjectWhenExceptionIsSet()
         {
-            this.ThrowAndLogAndCatchBulkOutput("test_with_no_serializer");
+            ThrowAndLogAndCatchBulkOutput("test_with_no_serializer");
         }
     }
 

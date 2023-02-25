@@ -4,11 +4,11 @@ using FluentAssertions;
 using Xunit;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Elasticsearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class IndexDeciderTests : ElasticsearchSinkTestsBase
+    public class IndexDeciderTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public void IndexDecider_EndsUpInTheOutput()
@@ -18,7 +18,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             const string messageTemplate = "{Song}++ @{Complex}";
             var template = new MessageTemplateParser().Parse(messageTemplate);
             _options.IndexDecider = (l, utcTime) => string.Format("logstash-{1}-{0:yyyy.MM.dd}", utcTime, l.Level.ToString().ToLowerInvariant());
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 var properties = new List<LogEventProperty> { new LogEventProperty("Song", new ScalarValue("New Macabre")) };
                 var e = new LogEvent(timestamp, LogEventLevel.Information, null, template, properties);
@@ -37,7 +37,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
                 sink.Emit(e);
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 4);
             bulkJsonPieces[0].Should().Contain(@"""_index"":""logstash-information-2013.05.28");
             bulkJsonPieces[1].Should().Contain("New Macabre");
             bulkJsonPieces[2].Should().Contain(@"""_index"":""logstash-fatal-2011.05.28");

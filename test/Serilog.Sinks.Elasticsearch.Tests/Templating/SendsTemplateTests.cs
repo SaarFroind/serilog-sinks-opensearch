@@ -1,24 +1,23 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class SendsTemplateTests : ElasticsearchSinkTestsBase
+    public class SendsTemplateTests : OpenSearchSinkTestsBase
     {
         private readonly Tuple<Uri, string> _templatePut;
 
         public SendsTemplateTests()
         {
-            _options.DetectElasticsearchVersion = false;
             _options.AutoRegisterTemplate = true;
 
             var loggerConfig = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .Enrich.WithMachineName()
                 .WriteTo.Console()
-                .WriteTo.Elasticsearch(_options);
+                .WriteTo.OpenSearch(_options);
 
             var logger = loggerConfig.CreateLogger();
             using (logger as IDisposable)
@@ -26,9 +25,9 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Templating
                 logger.Error("Test exception. Should not contain an embedded exception object.");
             }
 
-            this._seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            this._seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
-            _templatePut = this._seenHttpPuts[0];
+            _seenHttpPosts.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _seenHttpPuts.Should().NotBeNullOrEmpty().And.HaveCount(1);
+            _templatePut = _seenHttpPuts[0];
         }
 
         [Fact]

@@ -4,12 +4,12 @@ using System.Text;
 using FluentAssertions;
 using Xunit;
 using Serilog.Debugging;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
     [Collection("isolation")]
-    public class DiscoverVersionHandlesUnavailableServerTests : ElasticsearchSinkTestsBase
+    public class DiscoverVersionHandlesUnavailableServerTests : OpenSearchSinkTestsBase
     {
         [Fact]
         public void Should_not_crash_when_server_is_unavaiable()
@@ -35,9 +35,9 @@ namespace Serilog.Sinks.Elasticsearch.Tests.Templating
         private static ILogger CreateLoggerThatCrashes()
         {
             var loggerConfig = new LoggerConfiguration()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9199"))
+                .WriteTo.OpenSearch(new OpenSearchSinkOptions(new Uri("http://localhost:9199"))
                 {
-                    DetectElasticsearchVersion = true
+                    DetectOpenSearchVersion = true
                 });
 
             return loggerConfig.CreateLogger();

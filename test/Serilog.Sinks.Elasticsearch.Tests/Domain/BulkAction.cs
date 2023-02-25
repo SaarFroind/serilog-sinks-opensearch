@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog.Events;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Domain
+namespace Serilog.Sinks.OpenSearch.Tests.Domain
 {
     /// <summary>
     /// Elasticsearch _bulk follows a specific pattern:

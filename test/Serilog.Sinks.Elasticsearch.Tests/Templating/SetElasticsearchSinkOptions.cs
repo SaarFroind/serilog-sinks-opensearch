@@ -1,24 +1,24 @@
 ﻿using System;
 using FluentAssertions;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests.Templating
+namespace Serilog.Sinks.OpenSearch.Tests.Templating
 {
-    public class SetElasticsearchSinkOptions : ElasticsearchSinkTestsBase
+    public class SetElasticsearchSinkOptions : OpenSearchSinkTestsBase
     {
 
         [Fact]
         public void WhenCreatingOptions_NumberOfShardsInjected_NumberOfShardsAreSet()
         {
-            var options = new ElasticsearchSinkOptions(new Uri("http://localhost:9100"))
+            var options = new OpenSearchSinkOptions(new Uri("http://localhost:9100"))
             {
                 AutoRegisterTemplate = true,
 
                 NumberOfShards = 2,
                 NumberOfReplicas = 0
             };
-                       
+
             options.NumberOfReplicas.Should().Be(0);
             options.NumberOfShards.Should().Be(2);
 

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class CustomIndexTypeNameTests : ElasticsearchSinkTestsBase
+    public class CustomIndexTypeNameTests : OpenSearchSinkTestsBase
     {
         public CustomIndexTypeNameTests()
             : base("6.0.0")
@@ -25,7 +25,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             var template = new MessageTemplateParser().Parse(messageTemplate);
             _options.TypeName = "custom-event-type";
             _options.IndexFormat = "event-index-{0:yyyy.MM.dd}";
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 var properties = new List<LogEventProperty> { new LogEventProperty("Song", new ScalarValue("New Macabre")) };
                 var e = new LogEvent(timestamp, LogEventLevel.Information, null, template, properties);
@@ -43,7 +43,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
                 sink.Emit(e);
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 4);
 
             bulkJsonPieces.Should().HaveCount(4);
             bulkJsonPieces[0].Should().Contain(@"""_index"":""event-index-2013.05.28");
@@ -66,7 +66,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             var template = new MessageTemplateParser().Parse(messageTemplate);
             _options.TypeName = "custom-event-type";
             _options.IndexFormat = "Event-Index-{0:yyyy.MM.dd}";
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 var properties = new List<LogEventProperty> { new LogEventProperty("Song", new ScalarValue("New Macabre")) };
                 var e = new LogEvent(timestamp, LogEventLevel.Information, null, template, properties);
@@ -84,7 +84,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
                 sink.Emit(e);
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 4);
 
             bulkJsonPieces.Should().HaveCount(4);
             bulkJsonPieces[0].Should().Contain(@"""_index"":""event-index-2013.05.28");

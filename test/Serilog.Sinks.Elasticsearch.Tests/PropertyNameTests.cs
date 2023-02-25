@@ -5,11 +5,11 @@ using FluentAssertions;
 using Xunit;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 
-namespace Serilog.Sinks.Elasticsearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class PropertyNameTests : ElasticsearchSinkTestsBase
+    public class PropertyNameTests : OpenSearchSinkTestsBase
     {
 
         [Fact]
@@ -17,18 +17,18 @@ namespace Serilog.Sinks.Elasticsearch.Tests
         {
             try
             {
-                await this.ThrowAsync();
+                await ThrowAsync();
             }
             catch (Exception e)
             {
                 var timestamp = new DateTimeOffset(2013, 05, 28, 22, 10, 20, 666, TimeSpan.FromHours(10));
                 var messageTemplate = "{Song}++";
                 var template = new MessageTemplateParser().Parse(messageTemplate);
-                using (var sink = new ElasticsearchSink(_options))
+                using (var sink = new OpenSearchSink(_options))
                 {
                     var properties = new List<LogEventProperty>
                     {
-                        new LogEventProperty("Song", new ScalarValue("New Macabre")), 
+                        new LogEventProperty("Song", new ScalarValue("New Macabre")),
                         new LogEventProperty("Complex", new ScalarValue(new { A = 1, B = 2 }))
                     };
                     var logEvent = new LogEvent(timestamp, LogEventLevel.Information, e, template, properties);
@@ -39,7 +39,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
                     logEvent = new LogEvent(timestamp.AddDays(2), LogEventLevel.Information, e, template, properties);
                     sink.Emit(logEvent);
                 }
-                var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 4);
+                var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 4);
                 bulkJsonPieces[0].Should().Contain(@"""_index"":""logstash-2013.05.28");
                 bulkJsonPieces[1].Should().Contain("New Macabre");
                 bulkJsonPieces[1].Should().NotContain("Properties\"");

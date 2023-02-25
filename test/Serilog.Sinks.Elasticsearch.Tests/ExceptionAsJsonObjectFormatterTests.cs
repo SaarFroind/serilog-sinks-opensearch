@@ -8,19 +8,19 @@ using Xunit;
 using Serilog.Events;
 using Serilog.Formatting.Elasticsearch;
 using Serilog.Parsing;
-using Serilog.Sinks.Elasticsearch.Tests.Domain;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Domain;
 
-namespace Serilog.Sinks.Elasticsearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class ExceptionAsJsonObjectFormatterTests : ElasticsearchSinkTestsBase
+    public class ExceptionAsJsonObjectFormatterTests : OpenSearchSinkTestsBase
     {
         private static readonly MessageTemplateParser _messageTemplateParser = new MessageTemplateParser();
 
         public ExceptionAsJsonObjectFormatterTests() : base()
-        { 
+        {
 
-            _options.CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage:true);
+            _options.CustomFormatter = new ExceptionAsObjectJsonFormatter(renderMessage: true);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
         {
             const string expectedMessage = "test";
 
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(LogEventWithMessage(expectedMessage));
             }
@@ -43,7 +43,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
         {
             const string expectedExceptionMessage = "test exception";
 
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(LogEventWithMessage("test", new Exception(expectedExceptionMessage)));
             }
@@ -63,7 +63,7 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             var inner = new InvalidOperationException();
             var exception = new Exception("outer", inner);
 
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(LogEventWithMessage("test", exception));
             }
@@ -83,8 +83,8 @@ namespace Serilog.Sinks.Elasticsearch.Tests
         private IEnumerable<KibanaFriendlyJsonEvent> AssertAndGetJsonEvents()
         {
             _seenHttpPosts.Should().NotBeEmpty();
-            return _seenHttpPosts.SelectMany(postedData => postedData.Split(new char[] { '\n'}, StringSplitOptions.RemoveEmptyEntries))
-                .Where((_,i) => i % 2 == 1)
+            return _seenHttpPosts.SelectMany(postedData => postedData.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                .Where((_, i) => i % 2 == 1)
                 .Select(JsonConvert.DeserializeObject<KibanaFriendlyJsonEvent>);
         }
 

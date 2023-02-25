@@ -3,12 +3,12 @@ using System.Linq;
 using FluentAssertions;
 using Serilog.Events;
 using Serilog.Parsing;
-using Serilog.Sinks.Elasticsearch.Tests.Stubs;
+using Serilog.Sinks.OpenSearch.Tests.Stubs;
 using Xunit;
 
-namespace Serilog.Sinks.Elasticsearch.Tests
+namespace Serilog.Sinks.OpenSearch.Tests
 {
-    public class BulkActionTests : ElasticsearchSinkTestsBase
+    public class BulkActionTests : OpenSearchSinkTestsBase
     {
         [Fact(Skip = "Flaky test on GitHub actions")]
         public void DefaultBulkActionV7()
@@ -16,13 +16,13 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             _options.IndexFormat = "logs";
             _options.TypeName = "_doc";
             _options.PipelineName = null;
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_type"":""_doc"",""_index"":""logs""}}";
             bulkJsonPieces[0].Should().Be(expectedAction);
         }
@@ -32,15 +32,14 @@ namespace Serilog.Sinks.Elasticsearch.Tests
         {
             _options.IndexFormat = "logs";
             _options.TypeName = null; // This is the default value, starting v9.0.0
-            _options.AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7;
             _options.PipelineName = null;
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_type"":""_doc"",""_index"":""logs""}}";
             bulkJsonPieces[0].Should().Be(expectedAction);
         }
@@ -51,13 +50,13 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             _options.IndexFormat = "logs";
             _options.TypeName = null;
             _options.PipelineName = null;
-            using (var sink = new ElasticsearchSink(_options))
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_index"":""logs""}}";
             bulkJsonPieces[0].Should().Be(expectedAction);
         }
@@ -70,14 +69,14 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             _options.TypeName = null;
             _options.PipelineName = null;
             _options.BatchAction = ElasticOpType.Create;
-            
-            using (var sink = new ElasticsearchSink(_options))
+
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""create"":{""_index"":""logs-my-stream""}}";
             bulkJsonPieces[0].Should().Be(expectedAction);
         }
@@ -89,19 +88,20 @@ namespace Serilog.Sinks.Elasticsearch.Tests
             _options.TypeName = "_doc";
             _options.PipelineName = "my-pipeline";
             _options.BatchAction = ElasticOpType.Index;
-            
-            using (var sink = new ElasticsearchSink(_options))
+
+            using (var sink = new OpenSearchSink(_options))
             {
                 sink.Emit(ADummyLogEvent());
                 sink.Emit(ADummyLogEvent());
             }
 
-            var bulkJsonPieces = this.AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
+            var bulkJsonPieces = AssertSeenHttpPosts(_seenHttpPosts, 2, 1);
             const string expectedAction = @"{""index"":{""_type"":""_doc"",""_index"":""logs-my-stream"",""pipeline"":""my-pipeline""}}";
             bulkJsonPieces[0].Should().Be(expectedAction);
         }
 
-        private static LogEvent ADummyLogEvent() {
+        private static LogEvent ADummyLogEvent()
+        {
             return new LogEvent(DateTimeOffset.Now, LogEventLevel.Information, null,
                 new MessageTemplate("A template", Enumerable.Empty<MessageTemplateToken>()),
                 Enumerable.Empty<LogEventProperty>());

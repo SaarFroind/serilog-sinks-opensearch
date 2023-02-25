@@ -6,11 +6,10 @@ using Elastic.Elasticsearch.Xunit.XunitPlumbing;
 using Elasticsearch.Net;
 using Nest;
 using Serilog.Sinks.Elasticsearch.IntegrationTests.Bootstrap;
-using Xunit;
 
 namespace Serilog.Sinks.Elasticsearch.IntegrationTests.Elasticsearch7.Bootstrap
 {
-	public abstract class Elasticsearch7XTestBase : IClusterFixture<Elasticsearch7XCluster> 
+    public abstract class Elasticsearch7XTestBase : IClusterFixture<Elasticsearch7XCluster> 
 	{
         protected Elasticsearch7XTestBase(Elasticsearch7XCluster cluster) => Cluster = cluster;
 

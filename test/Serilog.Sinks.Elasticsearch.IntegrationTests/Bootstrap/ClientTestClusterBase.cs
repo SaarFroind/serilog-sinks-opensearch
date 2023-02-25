@@ -1,6 +1,7 @@
 ﻿using Elastic.Elasticsearch.Ephemeral;
 using Elastic.Elasticsearch.Ephemeral.Plugins;
 using Elastic.Elasticsearch.Xunit;
+using OpenSearch.Net.Ephemeral;
 using Elastic.Stack.ArtifactsApi.Products;
 
 namespace Serilog.Sinks.Elasticsearch.IntegrationTests.Bootstrap

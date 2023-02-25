@@ -42,7 +42,7 @@
                     "index": true
                 },
                 "exceptions": {
-                    "type": "nested",
+                    "type": "OpenSearch.Cliented",
                     "properties": {
                         "Depth": {
                             "type": "integer"
