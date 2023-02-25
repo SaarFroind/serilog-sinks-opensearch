@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Authors>Michiel van Oudheusden, Martijn Laarman, Mogens Heller Grabe, Serilog Contributors</Authors>
-    <Title>Serilog.Sinks.Elasticsearch</Title>
-    <Description>Serilog sink for Elasticsearch</Description>
+    <Title>Serilog.Sinks.OpenSearch</Title>
+    <Description>Serilog sink for OpenSearch</Description>
     <Copyright>Copyright © Serilog Contributors 2023</Copyright>
   </PropertyGroup>
   
@@ -10,19 +10,19 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>Serilog.Formatting.Elasticsearch</AssemblyName>
+    <AssemblyName>Serilog.Formatting.OpenSearch</AssemblyName>
     <AssemblyOriginatorKeyFile>../../assets/Serilog.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign>false</PublicSign>
-    <PackageId>Serilog.Formatting.Elasticsearch</PackageId>
-    <PackageTags>serilog;elasticsearch;logging;event;formatting</PackageTags>
+    <PackageId>Serilog.Formatting.OpenSearch</PackageId>
+    <PackageTags>serilog;OpenSearch;logging;event;formatting</PackageTags>
     <PackageReleaseNotes>https://github.com/serilog-contrib/serilog-sinks-elasticsearch/blob/master/CHANGES.md</PackageReleaseNotes>
     <PackageIcon>serilog-sink-nuget.png</PackageIcon>
     <PackageProjectUrl>https://github.com/serilog-contrib/serilog-sinks-elasticsearch</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/serilog-contrib/serilog-sinks-elasticsearch</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <RootNamespace>Serilog.Formatting.ElasticSearch</RootNamespace>
+    <RootNamespace>Serilog.Formatting.OpenSearch</RootNamespace>
   </PropertyGroup>
     
   <ItemGroup>

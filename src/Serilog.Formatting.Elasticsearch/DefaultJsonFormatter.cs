@@ -22,7 +22,7 @@ using Serilog.Events;
 using Serilog.Formatting.Json;
 using Serilog.Parsing;
 
-namespace Serilog.Formatting.Elasticsearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     /// Formats log events in a simple JSON structure. Instances of this class
@@ -107,7 +107,7 @@ namespace Serilog.Formatting.Elasticsearch
             WriteTimestamp(logEvent.Timestamp, ref delim, output);
             WriteLevel(logEvent.Level, ref delim, output);
 
-            if(_renderMessageTemplate)
+            if (_renderMessageTemplate)
             {
                 WriteMessageTemplate(logEvent.MessageTemplate.Text, ref delim, output);
             }

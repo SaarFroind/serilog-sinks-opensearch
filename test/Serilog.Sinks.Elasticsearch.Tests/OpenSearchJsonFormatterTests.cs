@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Serilog.Formatting.Elasticsearch;
+using Serilog.Formatting.OpenSearch;
 using Xunit;
 
 namespace Serilog.Sinks.OpenSearch.Tests

@@ -20,7 +20,7 @@ using OpenSearch.Net.Specification.IndicesApi;
 using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Formatting;
-using Serilog.Formatting.Elasticsearch;
+using Serilog.Formatting.OpenSearch;
 
 namespace Serilog.Sinks.OpenSearch
 {

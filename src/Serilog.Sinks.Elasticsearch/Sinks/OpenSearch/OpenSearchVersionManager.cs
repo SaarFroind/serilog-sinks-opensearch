@@ -6,12 +6,12 @@ using System;
 namespace Serilog.Sinks.OpenSearch
 {
     /// <summary>
-    /// Encapsulates detection of Elasticsearch version
+    /// Encapsulates detection of OpenSearch version
     /// and fallback in case of detection failiure.
     /// </summary>
     internal class OpenSearchVersionManager
     {
-        private readonly bool _detectElasticsearchVersion;
+        private readonly bool _detectOpenSearchVersion;
         private readonly IOpenSearchLowLevelClient _client;
 
         /// <summary>
@@ -22,10 +22,10 @@ namespace Serilog.Sinks.OpenSearch
         public bool DetectionAttempted { get; private set; }
 
         public OpenSearchVersionManager(
-            bool detectElasticsearchVersion,
+            bool detectOpenSearchVersion,
             IOpenSearchLowLevelClient client)
         {
-            _detectElasticsearchVersion = detectElasticsearchVersion;
+            _detectOpenSearchVersion = detectOpenSearchVersion;
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
@@ -36,7 +36,7 @@ namespace Serilog.Sinks.OpenSearch
                 if (DetectedVersion is not null)
                     return DetectedVersion;
 
-                if (_detectElasticsearchVersion == false
+                if (_detectOpenSearchVersion == false
                     || DetectionAttempted == true)
                     return DefaultVersion;
 

@@ -38,7 +38,7 @@ public class OpenSearchPayloadReaderTests : IDisposable
             "TestTypeName",
             null,
             (_, _) => "TestIndex",
-            ElasticOpType.Index,
+            OpenSearchOpType.Index,
             rollingInterval);
         var lines = new[]
         {
@@ -77,7 +77,7 @@ public class OpenSearchPayloadReaderTests : IDisposable
             "TestTypeName",
             null,
             (_, _) => "TestIndex",
-            ElasticOpType.Index,
+            OpenSearchOpType.Index,
             rollingInterval);
 
         // Assert

@@ -81,7 +81,7 @@ namespace Serilog.Sinks.OpenSearch
         /// <param name="bufferBaseFilename"><see cref="OpenSearchSinkOptions.BufferBaseFilename"/></param>
         /// <param name="bufferFileSizeLimitBytes"><see cref="OpenSearchSinkOptions.BufferFileSizeLimitBytes"/></param>
         /// <param name="bufferLogShippingInterval"><see cref="OpenSearchSinkOptions.BufferLogShippingInterval"/></param>
-        /// <param name="connectionGlobalHeaders">A comma or semi-colon separated list of key value pairs of headers to be added to each elastic http request</param>
+        /// <param name="connectionGlobalHeaders">A comma or semi-colon separated list of key value pairs of headers to be added to each OpenSearch http request</param>
         [Obsolete("New code should not be compiled against this obsolete overload"), EditorBrowsable(EditorBrowsableState.Never)]
         public static LoggerConfiguration OpenSearch(
            this LoggerSinkConfiguration loggerSinkConfiguration,
@@ -121,7 +121,7 @@ namespace Serilog.Sinks.OpenSearch
         /// <param name="bufferFileSizeLimitBytes"><see cref="OpenSearchSinkOptions.BufferFileSizeLimitBytes"/></param>
         /// <param name="bufferFileCountLimit"><see cref="OpenSearchSinkOptions.BufferFileCountLimit"/></param>        
         /// <param name="bufferLogShippingInterval"><see cref="OpenSearchSinkOptions.BufferLogShippingInterval"/></param>
-        /// <param name="connectionGlobalHeaders">A comma or semi-colon separated list of key value pairs of headers to be added to each elastic http request</param>
+        /// <param name="connectionGlobalHeaders">A comma or semi-colon separated list of key value pairs of headers to be added to each OpenSearch http request</param>
         /// <param name="connectionTimeout"><see cref="OpenSearchSinkOptions.ConnectionTimeout"/>The connection timeout (in seconds) when sending bulk operations to OpenSearch (defaults to 5).</param>   
         /// <param name="emitEventFailure"><see cref="OpenSearchSinkOptions.EmitEventFailure"/>Specifies how failing emits should be handled.</param>  
         /// <param name="queueSizeLimit"><see cref="OpenSearchSinkOptions.QueueSizeLimit"/>The maximum number of events that will be held in-memory while waiting to ship them to OpenSearch. Beyond this limit, events will be dropped. The default is 100,000. Has no effect on durable log shipping.</param>   
@@ -180,7 +180,7 @@ namespace Serilog.Sinks.OpenSearch
             long? singleEventSizePostingLimit = null,
             int? bufferFileCountLimit = null,
             Dictionary<string, string> templateCustomSettings = null,
-            ElasticOpType batchAction = ElasticOpType.Index,
+            OpenSearchOpType batchAction = OpenSearchOpType.Index,
             bool detectOpenSearchVersion = true)
         {
             if (string.IsNullOrEmpty(nodeUris))

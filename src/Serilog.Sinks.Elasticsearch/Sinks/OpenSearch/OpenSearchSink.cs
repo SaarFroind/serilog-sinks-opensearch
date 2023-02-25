@@ -29,7 +29,7 @@ namespace Serilog.Sinks.OpenSearch
     {
         public OpenSearchSink(OpenSearchSinkOptions options)
             : this(
-                  new BatchedElasticsearchSink(options),
+                  new BatchedOpenSearchSink(options),
                   new PeriodicBatchingSinkOptions
                   {
                       BatchSizeLimit = options.BatchPostingLimit,
@@ -47,13 +47,13 @@ namespace Serilog.Sinks.OpenSearch
         }
     }
     /// <summary>
-    /// Writes log events as documents to ElasticSearch.
+    /// Writes log events as documents to OpenSearch.
     /// </summary>
-    internal sealed class BatchedElasticsearchSink : IBatchedLogEventSink
+    internal sealed class BatchedOpenSearchSink : IBatchedLogEventSink
     {
         private readonly OpenSearchSinkState _state;
 
-        public BatchedElasticsearchSink(OpenSearchSinkOptions options)
+        public BatchedOpenSearchSink(OpenSearchSinkOptions options)
         {
             _state = OpenSearchSinkState.Create(options);
             _state.RegisterTemplateIfNeeded();
@@ -93,7 +93,7 @@ namespace Serilog.Sinks.OpenSearch
         /// Emit a batch of log events, running to completion synchronously.
         /// </summary>
         /// <param name="events">The events to emit.</param>
-        /// <returns>Response from Elasticsearch</returns>
+        /// <returns>Response from OpenSearch</returns>
         private Task<T> EmitBatchCheckedAsync<T>(IEnumerable<LogEvent> events) where T : class, IOpenSearchResponse, new()
         {
             // ReSharper disable PossibleMultipleEnumeration
@@ -114,7 +114,7 @@ namespace Serilog.Sinks.OpenSearch
             if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.WriteToSelfLog))
             {
                 // ES reports an error, output the error to the selflog
-                SelfLog.WriteLine("Caught exception while performing bulk operation to Elasticsearch: {0}", ex);
+                SelfLog.WriteLine("Caught exception while performing bulk operation to OpenSearch: {0}", ex);
             }
             if (_state.Options.EmitEventFailure.HasFlag(EmitEventFailureHandling.WriteToFailureSink) &&
                 _state.Options.FailureSink != null)
@@ -169,7 +169,7 @@ namespace Serilog.Sinks.OpenSearch
                 var indexName = _state.GetIndexForEvent(e, e.Timestamp.ToUniversalTime());
                 var pipelineName = _state.Options.PipelineNameDecider?.Invoke(e) ?? _state.Options.PipelineName;
 
-                var action = CreateElasticAction(
+                var action = CreateOpenSearchAction(
                     opType: _state.Options.BatchAction,
                     indexName: indexName,
                     pipelineName: pipelineName,
@@ -205,7 +205,7 @@ namespace Serilog.Sinks.OpenSearch
                         {
                             // ES reports an error, output the error to the selflog
                             SelfLog.WriteLine(
-                                "Failed to store event with template '{0}' into Elasticsearch. Elasticsearch reports for index {1} the following: {2}",
+                                "Failed to store event with template '{0}' into OpenSearch. OpenSearch reports for index {1} the following: {2}",
                                 e.MessageTemplate,
                                 action["_index"],
                                 _state.Serialize(action["error"]));
@@ -252,51 +252,51 @@ namespace Serilog.Sinks.OpenSearch
             }
         }
 
-        internal static string BulkAction(ElasticOpType elasticOpType) =>
-            elasticOpType == ElasticOpType.Create
+        internal static string BulkAction(OpenSearchOpType OpenSearchOpType) =>
+            OpenSearchOpType == OpenSearchOpType.Create
                 ? "create"
                 : "index";
 
-        internal static object CreateElasticAction(ElasticOpType opType, string indexName, string pipelineName = null, string id = null, string mappingType = null)
+        internal static object CreateOpenSearchAction(OpenSearchOpType opType, string indexName, string pipelineName = null, string id = null, string mappingType = null)
         {
-            var actionPayload = new ElasticActionPayload(
+            var actionPayload = new OpenSearchActionPayload(
                 indexName: indexName,
                 pipeline: string.IsNullOrWhiteSpace(pipelineName) ? null : pipelineName,
                 id: id,
                 mappingType: mappingType
             );
 
-            var action = opType == ElasticOpType.Create
-                ? (object)new ElasticCreateAction(actionPayload)
-                : new ElasticIndexAction(actionPayload);
+            var action = opType == OpenSearchOpType.Create
+                ? (object)new OpenSearchCreateAction(actionPayload)
+                : new OpenSearchIndexAction(actionPayload);
             return action;
         }
 
-        sealed class ElasticCreateAction
+        sealed class OpenSearchCreateAction
         {
-            public ElasticCreateAction(ElasticActionPayload payload)
+            public OpenSearchCreateAction(OpenSearchActionPayload payload)
             {
                 Payload = payload;
             }
 
             [DataMember(Name = "create")]
-            public ElasticActionPayload Payload { get; }
+            public OpenSearchActionPayload Payload { get; }
         }
 
-        sealed class ElasticIndexAction
+        sealed class OpenSearchIndexAction
         {
-            public ElasticIndexAction(ElasticActionPayload payload)
+            public OpenSearchIndexAction(OpenSearchActionPayload payload)
             {
                 Payload = payload;
             }
 
             [DataMember(Name = "index")]
-            public ElasticActionPayload Payload { get; }
+            public OpenSearchActionPayload Payload { get; }
         }
 
-        sealed class ElasticActionPayload
+        sealed class OpenSearchActionPayload
         {
-            public ElasticActionPayload(string indexName, string pipeline = null, string id = null, string mappingType = null)
+            public OpenSearchActionPayload(string indexName, string pipeline = null, string id = null, string mappingType = null)
             {
                 IndexName = indexName;
                 Pipeline = pipeline;

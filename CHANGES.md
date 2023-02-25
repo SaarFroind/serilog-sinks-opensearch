@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    ```
    TypeName = null,
    IndexFormat = "logs-my-stream",
-   BatchAction = ElasticOpType.Create,
+   BatchAction = OpenSearchOpType.Create,
    ```
    _Note: that current templates doesn't support data streams._ #355
 

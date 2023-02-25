@@ -16,7 +16,7 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
         private readonly string _typeName;
         private readonly Func<object, string> _serialize;
         private readonly Func<string, DateTime, string> _getIndexForEvent;
-        private readonly ElasticOpType _elasticOpType;
+        private readonly OpenSearchOpType _OpenSearchOpType;
         private readonly RollingInterval _rollingInterval;
         private List<string> _payload;
         private int _count;
@@ -29,10 +29,10 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
         /// <param name="typeName"></param>
         /// <param name="serialize"></param>
         /// <param name="getIndexForEvent"></param>
-        /// <param name="elasticOpType"></param>
+        /// <param name="OpenSearchOpType"></param>
         /// <param name="rollingInterval"></param>
         public OpenSearchPayloadReader(string pipelineName, string typeName, Func<object, string> serialize,
-            Func<string, DateTime, string> getIndexForEvent, ElasticOpType elasticOpType, RollingInterval rollingInterval)
+            Func<string, DateTime, string> getIndexForEvent, OpenSearchOpType OpenSearchOpType, RollingInterval rollingInterval)
         {
             if ((int)rollingInterval < (int)RollingInterval.Day)
             {
@@ -43,7 +43,7 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
             _typeName = typeName;
             _serialize = serialize;
             _getIndexForEvent = getIndexForEvent;
-            _elasticOpType = elasticOpType;
+            _OpenSearchOpType = OpenSearchOpType;
             _rollingInterval = rollingInterval;
         }
 
@@ -92,8 +92,8 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
         protected override void AddToPayLoad(string nextLine)
         {
             var indexName = _getIndexForEvent(nextLine, _date);
-            var action = BatchedElasticsearchSink.CreateElasticAction(
-                opType: _elasticOpType,
+            var action = BatchedOpenSearchSink.CreateOpenSearchAction(
+                opType: _OpenSearchOpType,
                 indexName: indexName, pipelineName: _pipelineName,
                 id: _count + "_" + Guid.NewGuid(),
                 mappingType: _typeName);

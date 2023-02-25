@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenSearch.Net;
-using Serilog.Formatting.Elasticsearch;
+using Serilog.Formatting.OpenSearch;
 
 namespace Serilog.Sinks.OpenSearch
 {

@@ -16,7 +16,7 @@
 using System;
 using System.IO;
 
-namespace Serilog.Formatting.Elasticsearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     /// A JSON formatter which plays nice with Kibana, 

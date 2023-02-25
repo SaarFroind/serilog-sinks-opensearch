@@ -36,7 +36,7 @@ namespace Serilog.Sinks.OpenSearch.Durable
 
             if (string.IsNullOrWhiteSpace(options.BufferBaseFilename))
             {
-                throw new ArgumentException("Cannot create the durable ElasticSearch sink without a buffer base file name!");
+                throw new ArgumentException("Cannot create the durable OpenSearch sink without a buffer base file name!");
             }
 
             _sink = new LoggerConfiguration()
@@ -51,17 +51,17 @@ namespace Serilog.Sinks.OpenSearch.Durable
                     encoding: Encoding.UTF8)
                 .CreateLogger();
 
-            var elasticSearchLogClient = new OpenSearchLogClient(
+            var OpenSearchLogClient = new OpenSearchLogClient(
                 OpenSearchLowLevelClient: _state.Client,
                 cleanPayload: _state.Options.BufferCleanPayload,
-                elasticOpType: _state.Options.BatchAction);
+                OpenSearchOpType: _state.Options.BatchAction);
 
             var payloadReader = new OpenSearchPayloadReader(
                  pipelineName: _state.Options.PipelineName,
                  typeName: _state.Options.TypeName,
                  serialize: _state.Serialize,
                  getIndexForEvent: _state.GetBufferedIndexForEvent,
-                 elasticOpType: _state.Options.BatchAction,
+                 OpenSearchOpType: _state.Options.BatchAction,
                  rollingInterval: options.BufferFileRollingInterval);
 
             _shipper = new OpenSearchLogShipper(
@@ -70,7 +70,7 @@ namespace Serilog.Sinks.OpenSearch.Durable
                 period: _state.Options.BufferLogShippingInterval ?? TimeSpan.FromSeconds(5),
                 eventBodyLimitBytes: _state.Options.SingleEventSizePostingLimit,
                 levelControlSwitch: _state.Options.LevelSwitch,
-                logClient: elasticSearchLogClient,
+                logClient: OpenSearchLogClient,
                 payloadReader: payloadReader,
                 retainedInvalidPayloadsLimitBytes: _state.Options.BufferRetainedInvalidPayloadsLimitBytes,
                 bufferSizeLimitBytes: _state.Options.BufferFileSizeLimitBytes,

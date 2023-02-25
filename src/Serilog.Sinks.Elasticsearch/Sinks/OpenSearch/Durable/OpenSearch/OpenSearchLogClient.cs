@@ -14,21 +14,21 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
     {
         private readonly IOpenSearchLowLevelClient _OpenSearchLowLevelClient;
         private readonly Func<string, long?, string, string> _cleanPayload;
-        private readonly ElasticOpType _elasticOpType;
+        private readonly OpenSearchOpType _OpenSearchOpType;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="OpenSearchLowLevelClient"></param>
         /// <param name="cleanPayload"></param>
-        /// <param name="elasticOpType"></param>
+        /// <param name="OpenSearchOpType"></param>
         public OpenSearchLogClient(IOpenSearchLowLevelClient OpenSearchLowLevelClient,
             Func<string, long?, string, string> cleanPayload,
-            ElasticOpType elasticOpType)
+            OpenSearchOpType OpenSearchOpType)
         {
             _OpenSearchLowLevelClient = OpenSearchLowLevelClient;
             _cleanPayload = cleanPayload;
-            _elasticOpType = elasticOpType;
+            _OpenSearchOpType = OpenSearchOpType;
         }
 
         public async Task<SentPayloadResult> SendPayloadAsync(List<string> payload)
@@ -56,7 +56,7 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
                 }
                 else
                 {
-                    SelfLog.WriteLine("Received failed ElasticSearch shipping result {0}: {1}", response.HttpStatusCode,
+                    SelfLog.WriteLine("Received failed OpenSearch shipping result {0}: {1}", response.HttpStatusCode,
                         response.OriginalException);
                     return new SentPayloadResult(response, false,
                         new InvalidResult()
@@ -86,7 +86,7 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
             bool hasErrors = false;
             foreach (dynamic item in items)
             {
-                var itemIndex = item?[BatchedElasticsearchSink.BulkAction(_elasticOpType)];
+                var itemIndex = item?[BatchedOpenSearchSink.BulkAction(_OpenSearchOpType)];
                 long? status = itemIndex?["status"];
                 i++;
                 if (!status.HasValue || status < 300)
@@ -101,7 +101,7 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
 
                 if (int.TryParse(id.Split('_')[0], out int index))
                 {
-                    SelfLog.WriteLine("Received failed ElasticSearch shipping result {0}: {1}. Failed payload : {2}.", status, errorString, payload.ElementAt(index * 2 + 1));
+                    SelfLog.WriteLine("Received failed OpenSearch shipping result {0}: {1}. Failed payload : {2}.", status, errorString, payload.ElementAt(index * 2 + 1));
                     badPayload.Add(payload.ElementAt(index * 2));
                     badPayload.Add(payload.ElementAt(index * 2 + 1));
                     if (_cleanPayload != null)
@@ -112,7 +112,7 @@ namespace Serilog.Sinks.OpenSearch.Durable.OpenSearch
                 }
                 else
                 {
-                    SelfLog.WriteLine($"Received failed ElasticSearch shipping result {status}: {errorString}.");
+                    SelfLog.WriteLine($"Received failed OpenSearch shipping result {status}: {errorString}.");
                 }
             }
 

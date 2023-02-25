@@ -22,9 +22,10 @@ using System.Reflection;
 using System.Runtime.Serialization;
 #endif
 using Serilog.Events;
+using Serilog.Formatting.OpenSearch;
 using Serilog.Parsing;
 
-namespace Serilog.Formatting.Elasticsearch
+namespace Serilog.Formatting.OpenSearch
 {
     /// <summary>
     /// Custom Json formatter that respects the configured property name handling and forces 'Timestamp' to @timestamp

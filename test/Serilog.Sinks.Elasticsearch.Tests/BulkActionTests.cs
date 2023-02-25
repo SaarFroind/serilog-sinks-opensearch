@@ -68,7 +68,7 @@ namespace Serilog.Sinks.OpenSearch.Tests
             _options.IndexFormat = "logs-my-stream";
             _options.TypeName = null;
             _options.PipelineName = null;
-            _options.BatchAction = ElasticOpType.Create;
+            _options.BatchAction = OpenSearchOpType.Create;
 
             using (var sink = new OpenSearchSink(_options))
             {
@@ -87,7 +87,7 @@ namespace Serilog.Sinks.OpenSearch.Tests
             _options.IndexFormat = "logs-my-stream";
             _options.TypeName = "_doc";
             _options.PipelineName = "my-pipeline";
-            _options.BatchAction = ElasticOpType.Index;
+            _options.BatchAction = OpenSearchOpType.Index;
 
             using (var sink = new OpenSearchSink(_options))
             {
