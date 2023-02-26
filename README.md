@@ -320,8 +320,8 @@ Option BufferFileSizeLimitBytes is added The maximum size, in bytes, to which th
 ### Breaking Changes
 #### Version 1.2.0 (starting off with the same version as the OpenSearch.Net and OpenSearch.Client versions)
 
-*Removed Elasticsearch packages and added OpenSearch packages.
-*Changed naming conventions
+* Removed Elasticsearch packages and added OpenSearch packages
+* Changed naming conventions
 
 ### serilog-sinks-elasticsearch Breaking changes
 
